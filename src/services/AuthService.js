@@ -15,32 +15,23 @@ class AuthService {
         return null;
       });
   }
+  logout(){
+    localStorage.removeItem('jwtToken');
+    window.location.reload();
+  }
   async saveUser(user) {
-    if(user.company === "no-company") {
-      return await axiosInstance.post("/register_normal", user)
-        .catch(err => {
-          /*if (err && err.response && err.response.status === 401) {
-            authService.logout();
-
-          } else if (err.response.status === 403) {
-            router.push({name: 'ForbiddenPage'});
-          }else {*/
-          return null;
-          // }
-        });
-    }
-    else{
-      return await axiosInstance.post("/register_company", user)
-        .catch(err => {
-          /*if (err && err.response && err.response.status === 401) {
-            authService.logout();
-
-          } else if (err.response.status === 403) {
-            router.push({name: 'ForbiddenPage'});
-          }else {*/
-          return null;
-          // }
-        });
+    try {
+      if (user.company === "no-company") {
+        const response = await axiosInstance.post("/register_normal", user);
+        return response;
+      } else {
+        const response = await axiosInstance.post("/register_company", user);
+        return response;
+      }
+    } catch (err) {
+      if (err.response) {
+        throw new Error(err.response.data);
+      }
     }
   }
 }

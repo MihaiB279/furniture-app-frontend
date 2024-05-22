@@ -9,13 +9,13 @@
         <b-card-header header-tag="header" class="p-1" role="tab">
           <b-button
             block
-            v-b-toggle="'room-' + key"
+            v-b-toggle="'room-' + key.replace(/ /g, '-')"
             variant="info"
             @click="onCollapseToggle(key)">
-            Room name: {{ key }}  (press to open to see details)
+            Room name: {{ key }} (press to open to see details)
           </b-button>
         </b-card-header>
-        <b-collapse :id="'room-' + key"
+        <b-collapse :id="'room-' + key.replace(/ /g, '-')"
                     accordion="my-accordion" role="tabpanel">
           <RoomForm @form-changed="dataFormChanged" :roomName="key"/>
           <b-card v-for="furniture in rooms[key].furniture"
@@ -50,18 +50,29 @@
                 @sliding-start="onSlideStart"
                 @sliding-end="onSlideEnd"
               >
-                <!-- Text slides with image -->
                 <b-carousel-slide v-for="furnitureDescription in roomsOffer[key].furniture"
                                   caption="Furniture description"
                                   img-src="https://img.freepik.com/free-photo/black-concrete-wall_24972-1046.jpg"
                 >
-                  <p v-if="roomsOffer[key].budget !== -1">
-                    {{ furnitureDescription }}
-                  </p>
-                  <p v-else>
-                    Sorry, we do not have a furniture to match your selection for:
-                    {{ furnitureDescription.name }}
-                  </p>
+                  <b-card v-if="roomsOffer[key].budget !== -1">
+                    <b-card-text :style="{ color: 'black' }" v-for="(value, propName) in furnitureDescription" :key="propName">
+                      <template v-if="propName === 'details'">
+                        <b-card-text v-for="(detailValue, detailKey) in parseDetailsToDisplay(value)" :key="detailKey">
+                          {{ detailKey }}: {{ detailValue }}<br>
+                        </b-card-text>
+                      </template>
+                      <!-- Display other properties normally -->
+                      <template v-else>
+                        {{ propName.charAt(0).toUpperCase() + propName.slice(1) }}: {{ value }}
+                      </template>
+                    </b-card-text>
+                  </b-card>
+                  <div v-else>
+                    <p>
+                      Sorry, we do not have a furniture to match your selection for:
+                      {{ furnitureDescription.name }}
+                    </p>
+                  </div>
                 </b-carousel-slide>
               </b-carousel>
               <p>
@@ -84,7 +95,7 @@
                 v-b-toggle.furniture-selection>Add
         furniture
       </b-button>
-      <b-sidebar id="furniture-selection" title="Furniture" width="40%" right shadow>
+      <b-sidebar id="furniture-selection" title="Furniture" width="40%" ref="sidebar" right shadow>
         <template #footer="{ hide }">
           <div class="d-flex bg-dark text-light align-items-center px-3 py-2">
             <b-button size="sm" @click="saveFurnitureToRoom" variant="primary">Save furniture
@@ -105,43 +116,11 @@
           </b-form-select>
           <div v-for="item in values">
             <p> {{ item.attribute }}</p>
-            <div v-if="item.values.includes('bool')">
-              <b-form-radio :name="'radio-' + selectedFurniture + '-' + item.attribute"
-                            value="No preference">
-                No preference
-              </b-form-radio>
-              <b-form-radio :name="'radio-' + selectedFurniture + '-' + item.attribute" value="Yes">
-                Yes
-              </b-form-radio>
-              <b-form-radio :name="'radio-' + selectedFurniture + '-' + item.attribute" value="No">
-                No
-              </b-form-radio>
-            </div>
-            <div v-else-if="item.values.includes('fixed')">
-              <b-form-radio :name="'radio-' + selectedFurniture + '-' + item.attribute"
-                            value="No preference">
-                No preference
-              </b-form-radio>
-              <b-form-radio :name="'radio-' + selectedFurniture + '-' + item.attribute"
-                            value="Fixed">
-                Fixed
-              </b-form-radio>
-              <b-form-radio :name="'radio-' + selectedFurniture + '-' + item.attribute"
-                            value="Range">Range
-              </b-form-radio>
-
-              <b-form-input
-                :id="'input-' + selectedFurniture + '-' + item.attribute"
-                type="text">
-              </b-form-input>
-            </div>
-            <div v-else>
-              <b-form-select :id="'select-' + selectedFurniture + '-' + item.attribute">
-                <b-form-select-option v-for="itemValue in item.values" :value="itemValue">
-                  {{ itemValue }}
-                </b-form-select-option>
-              </b-form-select>
-            </div>
+            <b-form-select :id="'select-' + selectedFurniture + '-' + item.attribute">
+              <b-form-select-option v-for="itemValue in item.values" :value="itemValue">
+                {{ itemValue }}
+              </b-form-select-option>
+            </b-form-select>
           </div>
         </div>
       </b-sidebar>
@@ -158,13 +137,19 @@
       <b-modal id="modal-room-name"
                title="Room name already existing"
                v-model="showAlreadyRoomModal">
-        <p class="my-4">A room with the name {{roomName}} already exists, please choose another name.</p>
+        <p class="my-4">A room with the name {{ roomName }} already exists, please choose another
+          name.</p>
+      </b-modal>
+      <b-modal id="modal-room-empty"
+               title="There is an empty room"
+               v-model="showEmptyRoomModal">
+        <p class="my-4">All rooms should have at least one furniture. Please check all of them.</p>
       </b-modal>
       <b-button
         variant="success"
         v-if="Object.keys(rooms).length > 0"
         @click="sendData">
-        Save
+        Generate
       </b-button>
     </div>
   </Layout>
@@ -184,6 +169,7 @@ export default {
     return {
       showAlreadyRoomModal: false,
       showRoomNameNotPresent: false,
+      showEmptyRoomModal: false,
       slide: 0,
       sliding: null,
       doOverlay: false,
@@ -198,6 +184,16 @@ export default {
     };
   },
   methods: {
+    parseDetailsToDisplay(details) {
+      const detailsObj = {};
+      const entries = details.replace(/^\{|\}$/g, '').split(',');
+      entries.forEach(entry => {
+        let [key, value] = entry.split(':').map(part => part.trim().replace(/^'|'$/g, ''));
+        key = key.charAt(0).toUpperCase() + key.slice(1);
+        detailsObj[key] = value;
+      });
+      return detailsObj;
+    },
     onSlideStart(slide) {
       this.sliding = true
     },
@@ -211,7 +207,7 @@ export default {
       }
     },
     addNewRoom() {
-      if(!(this.roomName in this.rooms)) {
+      if (!(this.roomName in this.rooms)) {
         const room = {
           name: this.roomName,
           budget: 0,
@@ -220,8 +216,7 @@ export default {
         this.rooms[this.roomName] = room;
         this.showAlreadyRoomModal = false;
         this.$forceUpdate();
-      }
-      else{
+      } else {
         this.showAlreadyRoomModal = true;
       }
     },
@@ -241,33 +236,21 @@ export default {
       const indexKeys = Object.keys(this.furniture[this.selectedFurniture]);
       for (const attribute of indexKeys) {
         const options = this.furniture[this.selectedFurniture][attribute];
-        options.unshift("No preferences");
+        if (options.indexOf("No preferences") === -1) {
+          options.unshift("No preferences");
+        }
         this.values.push({'attribute': attribute, 'values': options});
       }
     },
     saveFurnitureToRoom() {
-      if(this.currentRoom === null){
+      if (this.currentRoom === null) {
         this.showRoomNameNotPresent = true;
         return;
       }
       this.showRoomNameNotPresent = false;
       const sideBar = document.getElementById('furniture-selection');
-      const radioButtons = sideBar.querySelectorAll('input[type="radio"]');
-      const inserts = sideBar.querySelectorAll('input[type="text"]');
       const selects = sideBar.querySelectorAll('select');
       let furnitureDetails = {};
-
-      radioButtons.forEach(function (radioButton) {
-        if (radioButton.checked && (radioButton.value !== 'Fixed' && radioButton.value !== 'Range')) {
-          const attributeName = radioButton.name.split('-')[2];
-          furnitureDetails[attributeName] = radioButton.value;
-        }
-      });
-
-      inserts.forEach(function (insert) {
-        const attributeName = insert.id.split('-')[2];
-        furnitureDetails[attributeName] = insert.value;
-      });
 
       selects.forEach(function (select, index) {
         if (index > 0) {
@@ -298,8 +281,22 @@ export default {
       }
       this.$forceUpdate();
     },
+    async checkRooms() {
+      for (const [key, room] of Object.entries(this.rooms)) {
+        if (Object.keys(room.furniture).length === 0) {
+          this.showEmptyRoomModal = true;
+          return false;
+        }
+        this.showEmptyRoomModal = false;
+        return true;
+      }
+    },
     async sendData() {
+      if (await this.checkRooms() === false) {
+        return;
+      }
       this.doOverlay = true;
+      this.$refs.sidebar.hide();
       await ServiceFurniture.sendFurnitureData(this.rooms).then((response) => {
         if (response && response.data) {
           this.roomsOffer = response.data;

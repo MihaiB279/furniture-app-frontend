@@ -27,11 +27,13 @@
         </b-form-group>
 
         <b-form-group label="Username:" label-for="input-4">
-          <b-form-input :disabled="isEditMode" id="input-4" v-model="form.username" type="text"
-                        placeholder="Enter the username you want to use" required
-                        :state="validateField(form.username)"></b-form-input>
-          <b-form-invalid-feedback :state="validateField(form.username)">Username is required.
+          <b-form-input ref="usernameInput" :disabled="isEditMode" id="input-4" v-model="form.username"
+                        type="text" placeholder="Enter the username you want to use" required
+                        :state="validateField(form.username) && !errors.username"></b-form-input>
+          <b-form-invalid-feedback :state="validateField(form.username)">
+            Username is required.
           </b-form-invalid-feedback>
+          <b-form-text v-if="errors.username" class="text-danger">{{ errors.username }}</b-form-text>
         </b-form-group>
 
         <b-form-group label="Password:" label-for="input-5" v-if="!initialUserData">
@@ -141,10 +143,23 @@ export default {
         stairs: '',
         company: 'no-company',
       },
+      errors: {
+        username: ''
+      },
     };
+  },
+  watch: {
+    // Watch the username for changes
+    'form.username': function (newValue, oldValue) {
+      if (newValue !== oldValue && this.errors.username) {
+        this.errors.username = ''; // Clear the error message when the user starts editing
+        // Optionally reset the validation state if you are using it
+      }
+    }
   },
   methods: {
     onSubmit() {
+      this.clearErrors();
       if (this.isFormInvalid()) {
         alert("Please correct the highlighted errors.");
       } else {
@@ -181,16 +196,23 @@ export default {
               router.push('/login');
             })
             .catch(error => {
-              alert("Registration failed: " + error.message);
+              if (error.message.includes("Username")) {
+                this.errors.username = error.message;
+                this.$refs.usernameInput.focus();
+              } else {
+                alert("Registration failed: " + error.message);
+              }
             });
         }
       }
+    },
+    clearErrors() {
+      this.errors.username = '';
     },
     validateField(field) {
       if (typeof field === 'string') {
         return field.trim().length > 0;
       }
-      console.log(field);
       return false;
     },
     validatePassword() {
@@ -263,6 +285,9 @@ export default {
       this.initializeForm();
     }
   },
+  mounted() {
+    this.$refs.usernameInput.focus();
+  }
 };
 </script>
 
@@ -275,14 +300,6 @@ export default {
 
 .signup-card {
   border: none;
-}
-
-.fade-enter-active, .fade-leave-active {
-  transition: opacity 0.5s;
-}
-
-.fade-enter, .fade-leave-to {
-  opacity: 0;
 }
 </style>
 

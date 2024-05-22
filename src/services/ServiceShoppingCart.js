@@ -1,5 +1,6 @@
 import axios from "axios";
 import authHeader from "@/services/auth-header";
+import authService from "@/services/AuthService";
 
 const axiosInstance = axios.create({
   baseURL: 'http://localhost:8081/api/shopping',
@@ -10,12 +11,12 @@ class ServiceShoppingCart {
   saveToShoppingCart(item){
     return axiosInstance.post("/add", item, {headers: authHeader()})
       .catch(err => {
-        /*if (err && err.response && err.response.status === 401) {
+        if (err.response && err.response.status === 403) {
           authService.logout();
-
-        } else if (err.response.status === 403) {
-          router.push({name: 'ForbiddenPage'});
-        }else {*/
+        }
+        /*else if (err.response.status === 403) {
+            router.push({name: 'ForbiddenPage'});
+          }else {*/
         return null;
         // }
       });
@@ -23,12 +24,12 @@ class ServiceShoppingCart {
   async getShoppingCart(){
     return axiosInstance.get("/get", {headers: authHeader()})
       .catch(err => {
-        /*if (err && err.response && err.response.status === 401) {
+        if (err.response && err.response.status === 403) {
           authService.logout();
-
-        } else if (err.response.status === 403) {
-          router.push({name: 'ForbiddenPage'});
-        }else {*/
+        }
+        /*else if (err.response.status === 403) {
+            router.push({name: 'ForbiddenPage'});
+          }else {*/
         return null;
         // }
       });
@@ -37,12 +38,12 @@ class ServiceShoppingCart {
   deleteFromCart(item) {
     return axiosInstance.post("/delete" , item,  {headers: authHeader()})
       .catch(err => {
-        /*if (err && err.response && err.response.status === 401) {
+        if (err.response && err.response.status === 403) {
           authService.logout();
-
-        } else if (err.response.status === 403) {
-          router.push({name: 'ForbiddenPage'});
-        }else {*/
+        }
+        /*else if (err.response.status === 403) {
+            router.push({name: 'ForbiddenPage'});
+          }else {*/
         return null;
         // }
       });
