@@ -20,6 +20,7 @@
 <script>
 import ServicePayment from "@/services/ServicePayment";
 import router from "@/router";
+import store from "@/store"
 
 export default {
   name: "PaymentForm",
@@ -37,6 +38,7 @@ export default {
       if(this.selectedRadio === "Card online") {
         await ServicePayment.createCardPayment(data).then((response) => {
           if (response && response.data) {
+            store.commit('setPaymentProcessed', true);
             window.location.href = response.data;
           }
         });

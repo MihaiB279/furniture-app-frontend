@@ -18,7 +18,7 @@
         <b-collapse :id="'room-' + key.replace(/ /g, '-')"
                     accordion="my-accordion" role="tabpanel">
           <RoomForm @form-changed="dataFormChanged" :roomName="key"/>
-          <b-card v-for="furniture in rooms[key].furniture"
+          <b-card v-for="(furniture,index) in rooms[key].furniture"
                   no-body
                   class="w-25 p-3 mb-1 bg-secondary text-light my-card">
             <b-card-header header-tag="header" class="p-1" role="tab">
@@ -27,12 +27,12 @@
               </b-button>
               <b-button
                 block
-                v-b-toggle="key + '-' + furniture.furnitureType"
+                v-b-toggle="key + '-' + index"
                 variant="info">
                 {{ furniture.furnitureType }}
               </b-button>
             </b-card-header>
-            <b-collapse :id="key + '-' + furniture.furnitureType"
+            <b-collapse :id="key + '-' + index"
                         :accordion="'accordion-' + key" role="tabpanel">
               {{ furniture.details }}
             </b-collapse>
@@ -55,9 +55,12 @@
                                   img-src="https://img.freepik.com/free-photo/black-concrete-wall_24972-1046.jpg"
                 >
                   <b-card v-if="roomsOffer[key].budget !== -1">
-                    <b-card-text :style="{ color: 'black' }" v-for="(value, propName) in furnitureDescription" :key="propName">
+                    <b-card-text :style="{ color: 'black' }"
+                                 v-for="(value, propName) in furnitureDescription" :key="propName">
                       <template v-if="propName === 'details'">
-                        <b-card-text v-for="(detailValue, detailKey) in parseDetailsToDisplay(value)" :key="detailKey">
+                        <b-card-text
+                          v-for="(detailValue, detailKey) in parseDetailsToDisplay(value)"
+                          :key="detailKey">
                           {{ detailKey }}: {{ detailValue }}<br>
                         </b-card-text>
                       </template>
@@ -70,12 +73,12 @@
                   <div v-else>
                     <p>
                       Sorry, we do not have a furniture to match your selection for:
-                      {{ furnitureDescription.name }}
+                      {{ furnitureDescription.name.substring(0,furnitureDescription.name.length - 1)}}
                     </p>
                   </div>
                 </b-carousel-slide>
               </b-carousel>
-              <p>
+              <p v-if="roomsOffer[key].budget !== -1">
                 Total: {{ roomsOffer[key].budget }}
               </p>
               <b-button @click="addToFavourite(key)">
@@ -145,6 +148,12 @@
                v-model="showEmptyRoomModal">
         <p class="my-4">All rooms should have at least one furniture. Please check all of them.</p>
       </b-modal>
+      <b-modal id="modal-budget-bad"
+               title="There is an incorrect budget"
+               v-model="showBadBudget">
+        <p class="my-4">All rooms should have budget above 0. Please check the budgets of all rooms
+          all of them.</p>
+      </b-modal>
       <b-button
         variant="success"
         v-if="Object.keys(rooms).length > 0"
@@ -170,6 +179,7 @@ export default {
       showAlreadyRoomModal: false,
       showRoomNameNotPresent: false,
       showEmptyRoomModal: false,
+      showBadBudget: false,
       slide: 0,
       sliding: null,
       doOverlay: false,
@@ -199,6 +209,10 @@ export default {
     },
     onSlideEnd(slide) {
       this.sliding = false
+    },
+    isNaturalNumber(value) {
+      const number = Number(value);
+      return number > 0 && Number.isInteger(number);
     },
     dataFormChanged(roomData) {
       if (this.rooms[roomData.name].budget !== roomData.budget) {
@@ -270,6 +284,7 @@ export default {
           'details': furnitureDetails
         }];
       }
+      delete this.rooms[this.currentRoom].alreadyGenerated;
       this.$forceUpdate();
     },
     deleteFurniture(name, furnitureDetails) {
@@ -279,6 +294,7 @@ export default {
           break;
         }
       }
+      delete this.rooms[name].alreadyGenerated;
       this.$forceUpdate();
     },
     async checkRooms() {
@@ -287,9 +303,14 @@ export default {
           this.showEmptyRoomModal = true;
           return false;
         }
-        this.showEmptyRoomModal = false;
-        return true;
+        if (!this.isNaturalNumber(room.budget)) {
+          this.showBadBudget = true;
+          return false;
+        }
       }
+      this.showEmptyRoomModal = false;
+      this.showBadBudget = false;
+      return true;
     },
     async sendData() {
       if (await this.checkRooms() === false) {

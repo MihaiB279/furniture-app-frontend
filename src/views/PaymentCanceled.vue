@@ -9,6 +9,7 @@
 <script>
 import ServicePayment from "@/services/ServicePayment";
 import Layout from "@/views/Layout.vue";
+import store from "@/store"
 
 export default {
   name: "PaymentCanceled",
@@ -25,6 +26,7 @@ export default {
     sendPayment() {
       ServicePayment.sendCancel().then((response) => {
         if (response && response.data) {
+          store.commit('setPaymentProcessed', false);
         }
       });
     }

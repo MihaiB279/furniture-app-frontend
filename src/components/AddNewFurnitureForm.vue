@@ -85,6 +85,7 @@
 <script>
 import ServiceFurniture from "@/services/ServiceFurniture";
 import Layout from "@/views/Layout.vue";
+import router from "@/router";
 
 export default {
   name: "AddNewFurniture",
@@ -131,7 +132,8 @@ export default {
       })
       const furniture = {price: this.price, name: this.name, furnitureType: this.selectedFurniture, details: furnitureDetails};
       ServiceFurniture.saveFurniture(furniture).then((response) => {
-
+        alert("Furniture successfully added!");
+        router.push("/company-furniture");
       });
     },
   },

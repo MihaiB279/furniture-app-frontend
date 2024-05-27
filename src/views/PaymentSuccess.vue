@@ -9,6 +9,7 @@
 <script>
 import ServicePayment from "@/services/ServicePayment";
 import Layout from "@/views/Layout.vue";
+import store from "@/store";
 
 export default {
   name: "PaymentSuccess",
@@ -30,6 +31,7 @@ export default {
         if (response && response.data) {
           const status = response.data.status;
           this.message = "Your order was " + status;
+          store.commit('setPaymentProcessed', false);
         }
       });
     }

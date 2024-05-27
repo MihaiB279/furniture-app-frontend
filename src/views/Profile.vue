@@ -50,6 +50,7 @@
 import Layout from "@/views/Layout.vue";
 import ServiceUser from "@/services/ServiceUser";
 import ServicePayment from "@/services/ServicePayment";
+import JwtService from "@/services/JwtService";
 
 export default {
   name: "Profile",
@@ -84,9 +85,11 @@ export default {
     if (response != null) {
       this.user = response.data;
     }
-    const responsePayments = await ServicePayment.getPayments();
-    if (responsePayments != null) {
-      this.payments = responsePayments.data;
+    if (JwtService.extractRoleFromJWT() === 'USER') {
+      const responsePayments = await ServicePayment.getPayments();
+      if (responsePayments != null) {
+        this.payments = responsePayments.data;
+      }
     }
   },
   methods: {

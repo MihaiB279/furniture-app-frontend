@@ -9,7 +9,7 @@
         <b-form-input
           id="input-1"
           v-model="roomData.budget"
-          type="text"
+          type="number"
           placeholder="Enter the maximum budget allowed for this room"
           required
         ></b-form-input>

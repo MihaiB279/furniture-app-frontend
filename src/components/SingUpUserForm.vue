@@ -1,6 +1,6 @@
 <template>
   <div class="signup-form-container">
-    <b-card header="Sign Up Form" class="signup-card">
+    <b-card header="Your profile details" class="signup-card">
       <b-form @submit.prevent="onSubmit">
         <b-form-group label="First name:" label-for="input-1">
           <b-form-input :disabled="isEditMode" id="input-1" v-model="form.firstName" type="text"
@@ -27,13 +27,17 @@
         </b-form-group>
 
         <b-form-group label="Username:" label-for="input-4">
-          <b-form-input ref="usernameInput" :disabled="isEditMode" id="input-4" v-model="form.username"
+          <b-form-input ref="usernameInput" :disabled="isEditMode" id="input-4"
+                        v-model="form.username"
                         type="text" placeholder="Enter the username you want to use" required
                         :state="validateField(form.username) && !errors.username"></b-form-input>
           <b-form-invalid-feedback :state="validateField(form.username)">
             Username is required.
           </b-form-invalid-feedback>
-          <b-form-text v-if="errors.username" class="text-danger">{{ errors.username }}</b-form-text>
+          <b-form-text v-if="errors.username" class="text-danger">{{
+              errors.username
+            }}
+          </b-form-text>
         </b-form-group>
 
         <b-form-group label="Password:" label-for="input-5" v-if="!initialUserData">
@@ -56,8 +60,9 @@
         <b-form-group label="Phone:" label-for="input-7">
           <b-form-input :disabled="isEditMode" id="input-7" v-model="form.phone" type="tel"
                         placeholder="Enter your phone number" required
-                        :state="validateField(form.phone)"></b-form-input>
-          <b-form-invalid-feedback :state="validateField(form.phone)">Phone number is required.
+                        :state="validatePhone()"></b-form-input>
+          <b-form-invalid-feedback :state="validatePhone()">Phone number is required and should be
+            made of exactly 10 digit numbers.
           </b-form-invalid-feedback>
         </b-form-group>
 
@@ -221,7 +226,12 @@ export default {
       }
       return this.form.password.length >= 6;
     },
-
+    validatePhone() {
+      if (this.isEditMode && !this.form.password) {
+        return true;
+      }
+      return this.form.phone.length === 10 && /^[0-9]+$/.test(this.form.phone);
+    },
     validateConfirmPassword() {
       if (this.isEditMode && !this.form.confirmPassword) {
         return true;

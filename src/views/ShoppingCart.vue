@@ -56,9 +56,10 @@
         </b-button>
       </b-form-group>
     </b-card>
-    <a :href="`/shipping-details?value=${encodeURIComponent(finalPrice)}`">
+    <a  v-if="finalPrice !== 0" :href="`/shipping-details?value=${encodeURIComponent(finalPrice)}`">
       <b-button variant="primary">Buy</b-button>
     </a>
+    <p v-else>Nothing in your cart yet.</p>
   </Layout>
 </template>
 
