@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: 'https://furniture-app-backend.azurewebsites.net/api/auth',
+  baseURL: 'https://app-furniture-server.azurewebsites.net/api/auth',
 });
 
 class AuthService {

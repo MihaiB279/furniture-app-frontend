@@ -3,7 +3,7 @@ import authHeader from "@/services/auth-header";
 import authService from "@/services/AuthService";
 
 const axiosInstance = axios.create({
-  baseURL: 'https://furniture-app-backend.azurewebsites.net/api/payment',
+  baseURL: 'https://app-furniture-server.azurewebsites.net/api/payment',
 });
 
 
