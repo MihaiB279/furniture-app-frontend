@@ -12,6 +12,7 @@
           type="number"
           placeholder="Enter the maximum budget allowed for this room"
           required
+          @keydown.enter.prevent
         ></b-form-input>
       </b-form-group>
     </b-form>

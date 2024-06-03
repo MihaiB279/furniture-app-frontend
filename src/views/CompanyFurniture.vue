@@ -42,10 +42,12 @@
 <script>
 import ServiceFurniture from "@/services/ServiceFurniture";
 import Layout from "@/views/Layout.vue";
+import LoadingOverlay from "@/components/LoadingOverlay.vue"
+import { mapActions } from 'vuex';
 
 export default {
   name: "CompanyUser",
-  components: {Layout},
+  components: {Layout, LoadingOverlay},
   data() {
     return {
       furniture: [],
@@ -59,6 +61,7 @@ export default {
     };
   },
   methods: {
+    ...mapActions(['showLoading', 'hideLoading']),
     closeModal(){
       this.$bvModal.hide('modal-delete');
     },
@@ -99,7 +102,9 @@ export default {
     }
   },
   async created() {
+    this.showLoading();
     await this.getFurniturePerCompany();
+    this.hideLoading();
   },
 }
 </script>

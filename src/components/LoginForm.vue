@@ -43,9 +43,12 @@
 import AuthService from '@/services/AuthService';
 import JwtService from "@/services/JwtService";
 import router from "@/router";
+import LoadingOverlay from "@/components/LoadingOverlay.vue"
+import { mapActions } from 'vuex';
 
 export default {
   name: 'LoginForm',
+  components: {LoadingOverlay},
   data() {
     return {
       form: {
@@ -59,14 +62,18 @@ export default {
     };
   },
   methods: {
+    ...mapActions(['showLoading', 'hideLoading']),
     async onSubmit() {
       try {
+        this.showLoading();
         const response = await AuthService.login(this.form.username, this.form.password);
         const token = response.data.token;
         localStorage.setItem('jwtToken', token);
         await JwtService.login(token);
+        this.hideLoading();
         await router.push('/home');
       } catch (error) {
+        this.hideLoading();
         this.handleLoginError(error);
       }
     },

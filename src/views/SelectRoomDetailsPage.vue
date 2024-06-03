@@ -37,60 +37,57 @@
               {{ furniture.details }}
             </b-collapse>
           </b-card>
-          <b-overlay :show="doOverlay" rounded="sm">
-            <div v-if="roomsOffer[key]">
-              <b-carousel
-                id="carousel-1"
-                v-model="slide"
-                :interval="4000"
-                controls
-                indicators
-                background="#ababab"
-                style="text-shadow: 1px 1px 2px #333;"
-                @sliding-start="onSlideStart"
-                @sliding-end="onSlideEnd"
+          <div v-if="roomsOffer[key]">
+            <b-carousel
+              id="carousel-1"
+              v-model="slide"
+              :interval="4000"
+              controls
+              indicators
+              background="#ababab"
+              style="text-shadow: 1px 1px 2px #333;"
+              @sliding-start="onSlideStart"
+              @sliding-end="onSlideEnd"
+            >
+              <b-carousel-slide v-for="furnitureDescription in roomsOffer[key].furniture"
+                                caption="Furniture description"
+                                img-src="https://img.freepik.com/free-photo/black-concrete-wall_24972-1046.jpg"
               >
-                <b-carousel-slide v-for="furnitureDescription in roomsOffer[key].furniture"
-                                  caption="Furniture description"
-                                  img-src="https://img.freepik.com/free-photo/black-concrete-wall_24972-1046.jpg"
-                >
-                  <b-card v-if="roomsOffer[key].budget !== -1">
-                    <b-card-text :style="{ color: 'black' }"
-                                 v-for="(value, propName) in furnitureDescription" :key="propName">
-                      <template v-if="propName === 'details'">
-                        <b-card-text
-                          v-for="(detailValue, detailKey) in parseDetailsToDisplay(value)"
-                          :key="detailKey">
-                          {{ detailKey }}: {{ detailValue }}<br>
-                        </b-card-text>
-                      </template>
-                      <!-- Display other properties normally -->
-                      <template v-else>
-                        {{ propName.charAt(0).toUpperCase() + propName.slice(1) }}: {{ value }}
-                      </template>
-                    </b-card-text>
-                  </b-card>
-                  <div v-else>
-                    <p>
-                      Sorry, we do not have a furniture to match your selection for:
-                      {{ furnitureDescription.name.substring(0,furnitureDescription.name.length - 1)}}
-                    </p>
-                  </div>
-                </b-carousel-slide>
-              </b-carousel>
-              <p v-if="roomsOffer[key].budget !== -1">
-                Total: {{ roomsOffer[key].budget }}
-              </p>
-              <b-button @click="addToFavourite(key)">
-                <b-icon icon="star" class="menu-icon"></b-icon>
-                Favourites
-              </b-button>
-              <b-button @click="addToShoppingCart(key)">
-                <b-icon icon="cart3" class="menu-icon"></b-icon>
-                Shopping cart
-              </b-button>
-            </div>
-          </b-overlay>
+                <b-card v-if="roomsOffer[key].budget !== -1">
+                  <b-card-text :style="{ color: 'black' }"
+                               v-for="(value, propName) in furnitureDescription" :key="propName">
+                    <template v-if="propName === 'details'">
+                      <b-card-text
+                        v-for="(detailValue, detailKey) in parseDetailsToDisplay(value)"
+                        :key="detailKey">
+                        {{ detailKey }}: {{ detailValue }}<br>
+                      </b-card-text>
+                    </template>
+                    <template v-else>
+                      {{ propName.charAt(0).toUpperCase() + propName.slice(1) }}: {{ value }}
+                    </template>
+                  </b-card-text>
+                </b-card>
+                <div v-else>
+                  <p>
+                    Sorry, we do not have a furniture to match your selection for:
+                    {{ furnitureDescription.name.substring(0, furnitureDescription.name.length - 1) }}
+                  </p>
+                </div>
+              </b-carousel-slide>
+            </b-carousel>
+            <p v-if="roomsOffer[key].budget !== -1">
+              Total: {{ roomsOffer[key].budget }}
+            </p>
+            <b-button @click="addToFavourite(key)">
+              <b-icon icon="star" class="menu-icon"></b-icon>
+              Favourites
+            </b-button>
+            <b-button @click="addToShoppingCart(key)">
+              <b-icon icon="cart3" class="menu-icon"></b-icon>
+              Shopping cart
+            </b-button>
+          </div>
         </b-collapse>
       </b-card>
       <b-form-input v-model="roomName" placeholder="Enter your room name"></b-form-input>
@@ -167,13 +164,15 @@
 <script>
 import RoomForm from '@/components/RoomForm.vue';
 import Layout from '@/views/Layout.vue';
+import { mapActions } from 'vuex';
 import ServiceFurniture from "@/services/ServiceFurniture";
 import ServiceFavourite from "@/services/ServiceFavourite";
 import ServiceShoppingCart from "@/services/ServiceShoppingCart";
+import LoadingOverlay from "@/components/LoadingOverlay.vue";
 
 export default {
   name: 'GeneratePage',
-  components: {RoomForm, Layout},
+  components: {RoomForm, Layout,LoadingOverlay},
   data() {
     return {
       showAlreadyRoomModal: false,
@@ -182,7 +181,6 @@ export default {
       showBadBudget: false,
       slide: 0,
       sliding: null,
-      doOverlay: false,
       rooms: {},
       roomName: '',
       furniture: [],
@@ -194,6 +192,7 @@ export default {
     };
   },
   methods: {
+    ...mapActions(['showLoading', 'hideLoading']),
     parseDetailsToDisplay(details) {
       const detailsObj = {};
       const entries = details.replace(/^\{|\}$/g, '').split(',');
@@ -316,8 +315,8 @@ export default {
       if (await this.checkRooms() === false) {
         return;
       }
-      this.doOverlay = true;
       this.$refs.sidebar.hide();
+      this.showLoading();
       await ServiceFurniture.sendFurnitureData(this.rooms).then((response) => {
         if (response && response.data) {
           this.roomsOffer = response.data;
@@ -332,8 +331,8 @@ export default {
             }
           }
         }
+        this.hideLoading();
       });
-      this.doOverlay = false;
     },
     addToFavourite(key) {
       const favourite = {[key]: this.roomsOffer[key]}

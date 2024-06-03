@@ -5,17 +5,28 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    paymentProcessed: false
+    paymentProcessed: false,
+    loading: false
   },
   mutations: {
     setPaymentProcessed(state, status) {
       state.paymentProcessed = status;
-      if(status === true){
+      if (status === true) {
         localStorage.setItem('paymentProcessed', 'true');
-      }
-      else if(status === false){
+      } else if (status === false) {
         localStorage.removeItem('paymentProcessed');
       }
+    },
+    setLoading(state, status) {
+      state.loading = status;
+    }
+  },
+  actions: {
+    showLoading({ commit }) {
+      commit('setLoading', true);
+    },
+    hideLoading({ commit }) {
+      commit('setLoading', false);
     }
   }
 });

@@ -74,10 +74,12 @@
 import Layout from "@/views/Layout.vue";
 import ServiceFavourite from "@/services/ServiceFavourite";
 import ServiceShoppingCart from "@/services/ServiceShoppingCart";
+import LoadingOverlay from "@/components/LoadingOverlay.vue";
+import { mapActions } from 'vuex';
 
 export default {
   name: "Favourites",
-  components: {Layout},
+  components: {Layout, LoadingOverlay},
   data() {
     return {
       favourites: {},
@@ -85,7 +87,9 @@ export default {
     }
   },
   methods: {
+    ...mapActions(['showLoading', 'hideLoading']),
     async getFavourite() {
+      this.showLoading();
       await ServiceFavourite.getFavourites().then((response) => {
         if (response && response.data) {
           const favourites_list = response.data;
@@ -99,6 +103,7 @@ export default {
           this.keys = Object.keys(this.favourites);
         }
       });
+      this.hideLoading();
     },
     addToCart(item) {
       ServiceShoppingCart.saveToShoppingCart([item]).then((response) => {
@@ -126,7 +131,7 @@ export default {
     }
   },
     created() {
-      this.getFavourite()
+      this.getFavourite();
     },
 }
 </script>

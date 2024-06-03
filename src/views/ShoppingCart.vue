@@ -66,10 +66,12 @@
 <script>
 import Layout from "@/views/Layout.vue";
 import ServiceShoppingCart from "@/services/ServiceShoppingCart";
+import LoadingOverlay from "@/components/LoadingOverlay.vue";
+import { mapActions } from 'vuex';
 
 export default {
   name: "ShoppingCart",
-  components: {Layout},
+  components: {Layout, LoadingOverlay},
   data() {
     return {
       items: [],
@@ -77,7 +79,9 @@ export default {
     }
   },
   methods: {
+    ...mapActions(['showLoading', 'hideLoading']),
     async getShoppingCart() {
+      this.showLoading();
       await ServiceShoppingCart.getShoppingCart().then((response) => {
         if (response && response.data) {
           this.items = response.data;
@@ -88,6 +92,7 @@ export default {
           }
         }
       });
+      this.hideLoading();
     },
     deleteFromCart(item) {
       for (let i = 0; i < this.items.length; i++) {

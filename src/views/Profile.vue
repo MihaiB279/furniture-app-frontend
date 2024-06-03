@@ -47,6 +47,8 @@
 </template>
 
 <script>
+import LoadingOverlay from "@/components/LoadingOverlay.vue"
+import { mapActions } from 'vuex';
 import Layout from "@/views/Layout.vue";
 import ServiceUser from "@/services/ServiceUser";
 import ServicePayment from "@/services/ServicePayment";
@@ -54,7 +56,7 @@ import JwtService from "@/services/JwtService";
 
 export default {
   name: "Profile",
-  components: {Layout},
+  components: {Layout, LoadingOverlay},
   data() {
     return {
       user: {
@@ -81,6 +83,7 @@ export default {
     }
   },
   async created() {
+    this.showLoading();
     const response = await ServiceUser.getProfile();
     if (response != null) {
       this.user = response.data;
@@ -91,8 +94,10 @@ export default {
         this.payments = responsePayments.data;
       }
     }
+    this.hideLoading();
   },
   methods: {
+    ...mapActions(['showLoading', 'hideLoading']),
     editProfile() {
       this.$router.push({
         name: 'profile-edit',

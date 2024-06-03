@@ -5,7 +5,8 @@
         <b-form-group label="First name:" label-for="input-1">
           <b-form-input :disabled="isEditMode" id="input-1" v-model="form.firstName" type="text"
                         placeholder="Enter your first name" required
-                        :state="validateField(form.firstName)"></b-form-input>
+                        :state="validateField(form.firstName)"
+                        @keydown.enter.prevent></b-form-input>
           <b-form-invalid-feedback :state="validateField(form.firstName)">First name is required.
           </b-form-invalid-feedback>
         </b-form-group>
@@ -13,7 +14,8 @@
         <b-form-group label="Last name:" label-for="input-2">
           <b-form-input :disabled="isEditMode" id="input-2" v-model="form.lastName" type="text"
                         placeholder="Enter your last name" required
-                        :state="validateField(form.lastName)"></b-form-input>
+                        :state="validateField(form.lastName)"
+                        @keydown.enter.prevent></b-form-input>
           <b-form-invalid-feedback :state="validateField(form.lastName)">Last name is required.
           </b-form-invalid-feedback>
         </b-form-group>
@@ -21,7 +23,8 @@
         <b-form-group label="Email:" label-for="input-3">
           <b-form-input :disabled="isEditMode" id="input-3" v-model="form.email" type="email"
                         placeholder="Enter your email" required
-                        :state="validateField(form.email)"></b-form-input>
+                        :state="validateField(form.email)"
+                        @keydown.enter.prevent></b-form-input>
           <b-form-invalid-feedback :state="validateField(form.email)">A valid email is required.
           </b-form-invalid-feedback>
         </b-form-group>
@@ -30,7 +33,8 @@
           <b-form-input ref="usernameInput" :disabled="isEditMode" id="input-4"
                         v-model="form.username"
                         type="text" placeholder="Enter the username you want to use" required
-                        :state="validateField(form.username) && !errors.username"></b-form-input>
+                        :state="validateField(form.username) && !errors.username"
+                        @keydown.enter.prevent></b-form-input>
           <b-form-invalid-feedback :state="validateField(form.username)">
             Username is required.
           </b-form-invalid-feedback>
@@ -43,7 +47,8 @@
         <b-form-group label="Password:" label-for="input-5" v-if="!initialUserData">
           <b-form-input id="input-5" v-model="form.password" type="password"
                         placeholder="Enter your password" required
-                        :state="validatePassword()"></b-form-input>
+                        :state="validatePassword()"
+                        @keydown.enter.prevent></b-form-input>
           <b-form-invalid-feedback :state="validatePassword()">Password must be at least 6
             characters.
           </b-form-invalid-feedback>
@@ -52,7 +57,8 @@
         <b-form-group label="Repeat password:" label-for="input-6" v-if="!initialUserData">
           <b-form-input id="input-6" v-model="form.confirmPassword" type="password"
                         placeholder="Repeat the password" required
-                        :state="validateConfirmPassword()"></b-form-input>
+                        :state="validateConfirmPassword()"
+                        @keydown.enter.prevent></b-form-input>
           <b-form-invalid-feedback :state="validateConfirmPassword()">Passwords must match.
           </b-form-invalid-feedback>
         </b-form-group>
@@ -60,7 +66,8 @@
         <b-form-group label="Phone:" label-for="input-7">
           <b-form-input :disabled="isEditMode" id="input-7" v-model="form.phone" type="tel"
                         placeholder="Enter your phone number" required
-                        :state="validatePhone()"></b-form-input>
+                        :state="validatePhone()"
+                        @keydown.enter.prevent></b-form-input>
           <b-form-invalid-feedback :state="validatePhone()">Phone number is required and should be
             made of exactly 10 digit numbers.
           </b-form-invalid-feedback>
@@ -68,7 +75,8 @@
 
         <b-form-group label="County:" label-for="input-8">
           <b-form-input id="input-8" v-model="form.county" type="text"
-                        placeholder="Enter your county" required></b-form-input>
+                        placeholder="Enter your county" required
+                        @keydown.enter.prevent></b-form-input>
         </b-form-group>
 
         <b-form-group label="City:" label-for="input-9">
@@ -78,31 +86,36 @@
 
         <b-form-group label="Street:" label-for="input-10">
           <b-form-input id="input-10" v-model="form.street" type="text"
-                        placeholder="Enter your street" required></b-form-input>
+                        placeholder="Enter your street" required
+                        @keydown.enter.prevent></b-form-input>
         </b-form-group>
 
         <b-form-group label="Street number:" label-for="input-11">
           <b-form-input id="input-11" v-model="form.number" type="number"
-                        placeholder="Enter your street number" required></b-form-input>
+                        placeholder="Enter your street number" required
+                        @keydown.enter.prevent></b-form-input>
         </b-form-group>
 
         <b-form-group label="Building number:" label-for="input-12">
           <b-form-input id="input-12" v-model="form.buildingNumber" type="number"
-                        placeholder="Enter your building number" required></b-form-input>
+                        placeholder="Enter your building number" required
+                        @keydown.enter.prevent></b-form-input>
         </b-form-group>
 
         <b-form-group label="Stairs:" label-for="input-13">
           <b-form-input id="input-13" v-model="form.stairs" type="text"
-                        placeholder="Enter stair details" required></b-form-input>
+                        placeholder="Enter stair details" required
+                        @keydown.enter.prevent></b-form-input>
         </b-form-group>
 
-        <b-button v-if="!showCompany" @click.prevent="showCompanyField" variant="info">Register as a
+        <b-button v-if="!showCompany && !isEditMode" @click.prevent="showCompanyField" variant="info">Register as a
           company?
         </b-button>
         <transition name="fade">
           <b-form-group v-if="showCompany" label="Company you work for:" label-for="input-14">
             <b-form-input id="input-14" v-model="form.company" type="text"
-                          placeholder="Enter company name"></b-form-input>
+                          placeholder="Enter company name"
+                          @keydown.enter.prevent></b-form-input>
           </b-form-group>
         </transition>
 
@@ -116,9 +129,12 @@
 import router from "@/router";
 import AuthService from "@/services/AuthService";
 import ServiceUser from "@/services/ServiceUser";
+import LoadingOverlay from "@/components/LoadingOverlay.vue";
+import { mapActions } from 'vuex';
 
 export default {
   name: 'SignUpUserForm',
+  components: LoadingOverlay,
   props: {
     initialUserData: {
       type: Object,
@@ -154,20 +170,20 @@ export default {
     };
   },
   watch: {
-    // Watch the username for changes
     'form.username': function (newValue, oldValue) {
       if (newValue !== oldValue && this.errors.username) {
-        this.errors.username = ''; // Clear the error message when the user starts editing
-        // Optionally reset the validation state if you are using it
+        this.errors.username = '';
       }
     }
   },
   methods: {
+    ...mapActions(['showLoading', 'hideLoading']),
     onSubmit() {
       this.clearErrors();
       if (this.isFormInvalid()) {
         alert("Please correct the highlighted errors.");
       } else {
+        this.showLoading();
         const address = {
           county: this.form.county,
           city: this.form.city,
@@ -189,7 +205,6 @@ export default {
         if (this.isEditMode) {
           ServiceUser.updateUser(user)
             .then(() => {
-              alert("Profile updated successfully!");
               router.push('/profile');
             })
             .catch(error => {
@@ -209,6 +224,7 @@ export default {
               }
             });
         }
+        this.hideLoading();
       }
     },
     clearErrors() {
