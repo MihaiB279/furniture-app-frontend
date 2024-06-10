@@ -102,6 +102,12 @@
                         @keydown.enter.prevent></b-form-input>
         </b-form-group>
 
+        <b-form-group label="Apartment number:" label-for="input-12">
+          <b-form-input id="input-12" v-model="form.apartmentNumber" type="number"
+                        placeholder="Enter your apartmentNumber number" required
+                        @keydown.enter.prevent></b-form-input>
+        </b-form-group>
+
         <b-form-group label="Stairs:" label-for="input-13">
           <b-form-input id="input-13" v-model="form.stairs" type="text"
                         placeholder="Enter stair details" required
@@ -113,9 +119,13 @@
         </b-button>
         <transition name="fade">
           <b-form-group v-if="showCompany" label="Company you work for:" label-for="input-14">
-            <b-form-input id="input-14" v-model="form.company" type="text"
-                          placeholder="Enter company name"
-                          @keydown.enter.prevent></b-form-input>
+            <b-form-select id="input-14" v-model="form.company"
+                           :options="companies"
+                           @change="validateField(form.company)">
+              <template #first>
+                <b-form-select-option value="no-company">Select company</b-form-select-option>
+              </template>
+            </b-form-select>
           </b-form-group>
         </transition>
 
@@ -161,9 +171,11 @@ export default {
         street: '',
         number: null,
         buildingNumber: null,
+        apartmentNumber: null,
         stairs: '',
         company: 'no-company',
       },
+      companies: [],
       errors: {
         username: ''
       },
@@ -190,6 +202,7 @@ export default {
           street: this.form.street,
           number: this.form.number,
           buildingNumber: this.form.buildingNumber,
+          apartmentNumber: this.form.apartmentNumber,
           stairs: this.form.stairs
         };
         const user = {
@@ -267,6 +280,7 @@ export default {
         'city',
         'street',
         'number',
+        'apartmentNumber',
         'buildingNumber',
         'stairs'
       ];
@@ -283,6 +297,16 @@ export default {
     },
     showCompanyField() {
       this.showCompany = true;
+      this.fetchCompanies();
+    },
+    fetchCompanies() {
+      AuthService.getCompany().then(response => {
+        this.companies = response.data;
+        this.companies.unshift('no-company');
+      }).catch(error => {
+        console.error("Failed to fetch companies: ", error);
+        this.companies = ['no-company'];
+      });
     },
     initializeForm() {
       Object.keys(this.form).forEach(key => {
@@ -297,6 +321,7 @@ export default {
         this.form.street = this.initialUserData.address.street.toString();
         this.form.number = this.initialUserData.address.number.toString();
         this.form.buildingNumber = this.initialUserData.address.buildingNumber.toString();
+        this.form.apartmentNumber = this.initialUserData.address.apartmentNumber.toString();
         this.form.stairs = this.initialUserData.address.stairs.toString();
       }
 

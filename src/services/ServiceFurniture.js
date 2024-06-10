@@ -14,11 +14,7 @@ class ServiceFurniture {
         if (err.response && err.response.status === 403) {
           authService.logout();
         }
-        /*else if (err.response.status === 403) {
-            router.push({name: 'ForbiddenPage'});
-          }else {*/
         return null;
-        // }
       });
   }
   async saveFurniture(furniture) {
@@ -27,11 +23,7 @@ class ServiceFurniture {
         if (err.response && err.response.status === 403) {
           authService.logout();
         }
-        /*else if (err.response.status === 403) {
-            router.push({name: 'ForbiddenPage'});
-          }else {*/
         return null;
-        // }
       });
   }
   async getFurniturePerCompany() {
@@ -40,11 +32,7 @@ class ServiceFurniture {
         if (err.response && err.response.status === 403) {
           authService.logout();
         }
-        /*else if (err.response.status === 403) {
-            router.push({name: 'ForbiddenPage'});
-          }else {*/
         return null;
-        // }
       });
   }
 
@@ -55,11 +43,7 @@ class ServiceFurniture {
         if (err.response && err.response.status === 403) {
           authService.logout();
         }
-        /*else if (err.response.status === 403) {
-            router.push({name: 'ForbiddenPage'});
-          }else {*/
         return null;
-        // }
       });
   }
 
@@ -69,11 +53,7 @@ class ServiceFurniture {
         if (err.response && err.response.status === 403) {
           authService.logout();
         }
-        /*else if (err.response.status === 403) {
-            router.push({name: 'ForbiddenPage'});
-          }else {*/
         return null;
-        // }
       });
   }
 }

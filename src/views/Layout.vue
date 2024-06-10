@@ -73,21 +73,21 @@ export default {
 <style scoped>
 .nav-item {
   padding: 0;
-  list-style-type: none; /* Remove default padding */
+  list-style-type: none;
 }
 
 .menu-icon {
-  margin-right: 5px; /* Add some spacing between icon and text */
+  margin-right: 5px;
 }
 
 .menu-text {
-  color: #fff; /* Set text color to white */
-  font-weight: bold; /* Make text bold */
+  color: #fff;
+  font-weight: bold;
 }
 
 .page-container {
-  max-width: 80%; /* Set the maximum width of the page container */
-  margin: 0 auto; /* Center the page horizontally */
+  max-width: 80%;
+  margin: 0 auto;
 }
 
 </style>

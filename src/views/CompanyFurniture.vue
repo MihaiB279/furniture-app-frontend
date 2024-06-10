@@ -13,8 +13,7 @@
       aria-controls="my-table"
     ></b-pagination>
 
-    <p class="mt-3">Current Page: {{ currentPage }}</p>
-    <p class="mt-3">Row selected to delete: {{ currentRow }}</p>
+    <p class="mt-3">Furniture's row number selected to be deleted: {{ currentRow }}</p>
 
     <b-table
       id="my-table"

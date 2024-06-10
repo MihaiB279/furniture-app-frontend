@@ -15,13 +15,13 @@
         <b-card-text>City: {{ user.address.city }}</b-card-text>
         <b-card-text>Street: {{ user.address.street }}</b-card-text>
         <b-card-text>Number: {{ user.address.number }}</b-card-text>
-        <b-card-text v-if="user.buildingNumber">Building number:
+        <b-card-text v-if="user.buildingNumber !== null">Building number:
           {{ user.address.buildingNumber }}
         </b-card-text>
-        <b-card-text v-if="user.apartmentNumber">Apartment number:
+        <b-card-text v-if="user.apartmentNumber !== null">Apartment number:
           {{ user.address.apartmentNumber }}
         </b-card-text>
-        <b-card-text v-if="user.stairs">Stairs: {{ user.address.stairs }}</b-card-text>
+        <b-card-text v-if="user.stairs !== null">Stairs: {{ user.address.stairs }}</b-card-text>
         <b-button size="sm" class="mb-2" @click="editProfile">
           <b-icon icon="gear-fill" aria-hidden="true"></b-icon>
           Edit profile

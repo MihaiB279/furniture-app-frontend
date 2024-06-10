@@ -1,4 +1,5 @@
 import axios from "axios";
+import authHeader from "@/services/auth-header";
 
 const axiosInstance = axios.create({
   baseURL: 'https://app-furniture-server.azurewebsites.net/api/auth',
@@ -33,6 +34,15 @@ class AuthService {
         throw new Error(err.response.data);
       }
     }
+  }
+  async getCompany() {
+    return await axiosInstance.get("/getCompany")
+      .catch(err => {
+        if (err.response && err.response.status === 404) {
+          alert(err.response);
+        }
+        return null;
+      });
   }
 }
 

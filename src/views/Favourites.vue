@@ -1,6 +1,6 @@
 <template>
   <Layout>
-    <h1>Your rooms with your favourite furniture</h1>
+    <h4>Your rooms with your favourite furniture</h4>
     <b-card v-for="key in keys"
             no-body
             class="p-3 mb-1 my-card">
@@ -39,17 +39,16 @@
           label="Details: "
           label-for="input-3"
         >
-          <b-form-input
-            id="input-3"
-            v-model="fav.details"
-            type="text"
-            disabled
-          ></b-form-input>
+          <b-card-text
+            v-for="(detailValue, detailKey) in parseDetailsToDisplay(fav.details)"
+            :key="detailKey">
+            {{ detailKey }}: {{ detailValue }}<br>
+          </b-card-text>
         </b-form-group>
 
         <b-form-group
           id="input-group-4"
-          label="Details: "
+          label="Price: "
           label-for="input-4"
         >
           <b-form-input
@@ -76,6 +75,7 @@ import ServiceFavourite from "@/services/ServiceFavourite";
 import ServiceShoppingCart from "@/services/ServiceShoppingCart";
 import LoadingOverlay from "@/components/LoadingOverlay.vue";
 import { mapActions } from 'vuex';
+import {parseDetailsToDisplay} from "@/utils/parser";
 
 export default {
   name: "Favourites",
@@ -87,6 +87,7 @@ export default {
     }
   },
   methods: {
+    parseDetailsToDisplay,
     ...mapActions(['showLoading', 'hideLoading']),
     async getFavourite() {
       this.showLoading();

@@ -14,11 +14,7 @@ class ServicePayment {
         if (err.response && err.response.status === 403) {
           authService.logout();
         }
-        /*else if (err.response.status === 403) {
-            router.push({name: 'ForbiddenPage'});
-          }else {*/
         return null;
-        // }
       });
   }
 
@@ -28,11 +24,7 @@ class ServicePayment {
         if (err.response && err.response.status === 403) {
           authService.logout();
         }
-        /*else if (err.response.status === 403) {
-            router.push({name: 'ForbiddenPage'});
-          }else {*/
         return null;
-        // }
       });
   }
 
@@ -42,11 +34,7 @@ class ServicePayment {
         if (err.response && err.response.status === 403) {
           authService.logout();
         }
-        /*else if (err.response.status === 403) {
-            router.push({name: 'ForbiddenPage'});
-          }else {*/
         return null;
-        // }
       });
   }
 
@@ -57,11 +45,7 @@ class ServicePayment {
         if (err.response && err.response.status === 403) {
           authService.logout();
         }
-        /*else if (err.response.status === 403) {
-            router.push({name: 'ForbiddenPage'});
-          }else {*/
         return null;
-        // }
       });
   }
 
@@ -71,11 +55,7 @@ class ServicePayment {
         if (err.response && err.response.status === 403) {
           authService.logout();
         }
-        /*else if (err.response.status === 403) {
-            router.push({name: 'ForbiddenPage'});
-          }else {*/
         return null;
-        // }
       });
   }
 }

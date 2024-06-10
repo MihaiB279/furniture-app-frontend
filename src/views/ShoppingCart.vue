@@ -32,12 +32,11 @@
         label="Details: "
         label-for="input-3"
       >
-        <b-form-input
-          id="input-3"
-          v-model="item.furniture.details"
-          type="text"
-          disabled
-        ></b-form-input>
+        <b-card-text
+          v-for="(detailValue, detailKey) in parseDetailsToDisplay(item.furniture.details)"
+          :key="detailKey">
+          {{ detailKey }}: {{ detailValue }}<br>
+        </b-card-text>
       </b-form-group>
 
       <b-form-group
@@ -68,6 +67,7 @@ import Layout from "@/views/Layout.vue";
 import ServiceShoppingCart from "@/services/ServiceShoppingCart";
 import LoadingOverlay from "@/components/LoadingOverlay.vue";
 import { mapActions } from 'vuex';
+import {parseDetailsToDisplay} from "@/utils/parser";
 
 export default {
   name: "ShoppingCart",
@@ -79,6 +79,7 @@ export default {
     }
   },
   methods: {
+    parseDetailsToDisplay,
     ...mapActions(['showLoading', 'hideLoading']),
     async getShoppingCart() {
       this.showLoading();

@@ -51,8 +51,15 @@
             >
               <b-carousel-slide v-for="furnitureDescription in roomsOffer[key].furniture"
                                 caption="Furniture description"
-                                img-src="https://img.freepik.com/free-photo/black-concrete-wall_24972-1046.jpg"
               >
+                <template #img>
+                  <img
+                    class="d-block img-fluid w-100 slide-image"
+                    width=100%
+                    src="../assets/background.jpg"
+                    alt="image slot"
+                  >
+                </template>
                 <b-card v-if="roomsOffer[key].budget !== -1">
                   <b-card-text :style="{ color: 'black' }"
                                v-for="(value, propName) in furnitureDescription" :key="propName">
@@ -90,11 +97,43 @@
           </div>
         </b-collapse>
       </b-card>
-      <b-form-input v-model="roomName" placeholder="Enter your room name"></b-form-input>
-      <b-button pill v-if="Object.keys(rooms).length > 0" variant="primary"
-                v-b-toggle.furniture-selection>Add
-        furniture
-      </b-button>
+      <b-input-group>
+        <b-form-input v-model="roomName" placeholder="Enter your room name"></b-form-input>
+        <b-button v-if="Object.keys(rooms).length > 0" variant="primary"
+                  v-b-toggle.furniture-selection>Add
+          furniture
+        </b-button>
+        <b-modal id="modal-info" hide-footer title="How to?">
+          <div>
+            <p>Enter the desired room name in the designated field and click "Add a New Room".
+              Your room name will then be displayed with two additional buttons
+            </p>
+            <p>Click on the room name to access detailed information and manage room furniture.
+            By clicking on a furniture inside a room you can see its details, or you can
+              delete it.
+            <p>
+              Click the "Add Furniture" button to open the furniture selection panel.
+              Choose your preferred furniture options and click "Save Furniture".
+              Ensure the correct room is selected(clicked) when saving furniture.
+            </p>
+            <p>
+              Once all rooms are added and furnished to your preference, click "Generate" to process
+              your furniture layout. Modify your selections as needed by revisiting each room’s configuration
+            </p>
+            <p>
+              Add configurations to your favorites by clicking the star icon, or prepare for
+              purchase by clicking the shopping cart icon.
+            </p>
+            <p>
+              Enjoy your shopping experience and customize your space with ease!
+            </p>
+          </div>
+        </b-modal>
+        <b-button v-b-modal.modal-info variant="info">
+          <b-icon icon="info"></b-icon>
+        </b-button>
+      </b-input-group>
+
       <b-sidebar id="furniture-selection" title="Furniture" width="40%" ref="sidebar" right shadow>
         <template #footer="{ hide }">
           <div class="d-flex bg-dark text-light align-items-center px-3 py-2">
@@ -169,6 +208,7 @@ import ServiceFurniture from "@/services/ServiceFurniture";
 import ServiceFavourite from "@/services/ServiceFavourite";
 import ServiceShoppingCart from "@/services/ServiceShoppingCart";
 import LoadingOverlay from "@/components/LoadingOverlay.vue";
+import { parseDetailsToDisplay } from '@/utils/parser';
 
 export default {
   name: 'GeneratePage',
@@ -192,17 +232,8 @@ export default {
     };
   },
   methods: {
+    parseDetailsToDisplay,
     ...mapActions(['showLoading', 'hideLoading']),
-    parseDetailsToDisplay(details) {
-      const detailsObj = {};
-      const entries = details.replace(/^\{|\}$/g, '').split(',');
-      entries.forEach(entry => {
-        let [key, value] = entry.split(':').map(part => part.trim().replace(/^'|'$/g, ''));
-        key = key.charAt(0).toUpperCase() + key.slice(1);
-        detailsObj[key] = value;
-      });
-      return detailsObj;
-    },
     onSlideStart(slide) {
       this.sliding = true
     },

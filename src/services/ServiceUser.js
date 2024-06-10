@@ -16,11 +16,7 @@ class ServiceUser {
         } else if (err.response && err.response.status === 403) {
           authService.logout();
         }
-        /*else if (err.response.status === 403) {
-            router.push({name: 'ForbiddenPage'});
-          }else {*/
         return null;
-        // }
       });
   }
 
@@ -30,11 +26,7 @@ class ServiceUser {
         if (err.response && err.response.status === 403) {
           authService.logout();
         }
-        /*else if (err.response.status === 403) {
-            router.push({name: 'ForbiddenPage'});
-          }else {*/
         return null;
-        // }
       });
   }
 }

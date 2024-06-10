@@ -24,14 +24,14 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
+  background-color: rgba(0, 0, 0, 0.5);
   z-index: 1000;
 }
 
 .loader {
-  border: 16px solid #f3f3f3; /* Light grey */
+  border: 16px solid #f3f3f3;
   border-radius: 50%;
-  border-top: 16px solid #3498db; /* Blue */
+  border-top: 16px solid #3498db;
   width: 120px;
   height: 120px;
   animation: spin 2s linear infinite;
